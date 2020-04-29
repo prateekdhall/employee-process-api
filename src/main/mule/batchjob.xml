@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd 
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	
+	<file:config name="File_Config" doc:name="File Config" doc:id="fbdc7036-c6ca-4865-943c-8a91e1d6e74b" >
+		<file:connection workingDir="C:\AnypointStudio\studio-workspace\employee-process-api\src\main\resources" />
+	</file:config>
+	<flow name="batchjob" doc:id="a18dffa3-5b89-430e-b22f-e99674d70fb2" >
+		<scheduler doc:name="Scheduler" doc:id="6911388f-02cb-4fcf-945b-e8b20bd93284" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<file:read doc:name="Read" doc:id="92bc19a0-ef30-4ac5-8863-a3efad626dfa" config-ref="File_Config" path="inputforbatch.csv"/>
+		<ee:transform doc:name="Transform Message" doc:id="6edf341a-ce75-4beb-a3b3-497fc047ef14" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="prateek" doc:name="Set Variable" doc:id="ac56ba60-c76e-430f-833c-ac2b84a98901" variableName="setvar"/>
+		<batch:job jobName="batch_Job" doc:id="1228ae70-c589-4089-a29a-39470e1bed1e" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="9087c917-b39b-49cf-9a09-0e2238bb26f7" >
+					<file:write doc:name="Write" doc:id="acf03c8d-0c02-4df7-92e1-88d7ac191231" config-ref="File_Config" path="outputbatch.json" mode="APPEND"/>
+					<set-variable value="test2" doc:name="Set Variable" doc:id="a99654d9-4893-4b6c-8945-e822f488e06f" variableName="setvar"/>
+					<logger level="INFO" doc:name="Logger" doc:id="a90dfb47-1954-4b3b-8786-5eb0caf013c6" message="#[vars.setvar]" />
+				
+</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="31d46c63-b2c5-48a4-80c5-4dcca07b16c2" message="#[vars.setvar]"/>
+			</batch:on-complete>
+		
+</batch:job>
+	</flow>
+</mule>

@@ -1,0 +1,8 @@
+path:
+  api1: "/api/employees"
+  api2: "/api/employees/filterByDate"
+  
+http:
+  port: "8081"
+  port1: "8082"
+  domain: "localhost"

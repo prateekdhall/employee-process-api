@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="scatter-gather-example" doc:id="ea765579-974e-4e6b-bd49-0b9908d9f8eb" >
+		<scheduler doc:name="Scheduler" doc:id="d30bd5ae-9a50-42b2-94c0-e82693bbe75b" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<ee:transform doc:name="Transform Message" doc:id="bb7f59af-080e-46d5-a874-17a3b50145e2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "id": 25,	
+  "empid": 116472,
+  "name": "prateek2",
+  "email": "pratee2@sapient.com",
+  "destination": "SAL2",
+  "nationality": "Indian",
+  "age": 20,
+  "joindate": "2020-09-05"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="507d0cc7-9931-4168-98cd-28b8b9228346" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="payload1" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "id": 23,	
+  "empid": 116472,
+  "name": "prateek1",
+  "email": "pratee2@sapient.com",
+  "destination": "SAL2",
+  "nationality": "Indian",
+  "age": 20,
+  "joindate": "2020-09-05"
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="e17a2896-3248-4847-a827-d6f35c65d6df" >
+			<route >
+				<http:request method="POST" doc:name="Http Request1" doc:id="9b2e5a74-45e3-4a9e-aab1-9aef67dc3fcf" config-ref="HTTP_Request_configuration_system" path="${path.api1}">
+				</http:request>
+			</route>
+			<route >
+				<http:request method="POST" doc:name="Http Request2" doc:id="11652209-153d-4dd9-863b-18deed39413d" config-ref="HTTP_Request_configuration_system" path="${path.api1}">
+					<http:body ><![CDATA[#[vars.payload1]]]></http:body>
+				</http:request>
+			</route>
+		</scatter-gather>
+	</flow>
+</mule>

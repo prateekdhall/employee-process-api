@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="csv" format="csv">
+      <types:shape format="weave" example="input.csv"><![CDATA[%dw 2.0
+
+type csv = Array<{|  street: String,   city: String,   zip: String,   state: String,   beds: String,   baths: String,   sq__ft: String,   "type": String,   sale_date: String,   price: String,   latitude: String,   longitude: String|}>
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+    <types:type name="json" format="json">
+      <types:shape format="weave" example="example.json"><![CDATA[%dw 2.0
+
+type json = Array<{| city: String |}> {"example": "[{\\\"city\\\":\\\"test\\\"},{\\\"city\\\":\\\"test2\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="jsonex" format="json">
+      <types:shape format="weave" example="input.json"><![CDATA[%dw 2.0
+
+type jsonex = {| id: String |} {"example": "{\\\"id\\\":\\\"123\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="output2" format="json">
+      <types:shape format="weave" example="output2.json"><![CDATA[%dw 2.0
+
+type output2 = {|
+  id: String, 
+  name: String
+|} {"example": "{\\\"id\\\":\\\"123\\\",\\\"name\\\":\\\"prateek\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="batchcsv" format="csv">
+      <types:shape format="weave" example="inputforbatch.csv"><![CDATA[%dw 2.0
+
+type batchcsv = Array<{|  street: String,   city: String,   zip: String,   state: String,   beds: String,   baths: String,   sq__ft: String,   "type": String,   sale_date: String,   price: String,   latitude: String,   longitude: String|}>
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+    <types:type name="batchjson" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="outputbatchjson" format="json">
+      <types:shape format="weave" example="outputbatch.json"><![CDATA[%dw 2.0
+
+type outputbatchjson = {|
+  id: String, 
+  name: String
+|} {"example": "{\\\"id\\\":\\\"123\\\",\\\"name\\\":\\\"prateek\\\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#9f253c9f-89f8-4e3f-9a6e-5f0a0322a1e9">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="csv"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="json[]"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#66c534d8-e0d5-4398-af62-e233dd5fb4be">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="jsonex[]"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="output2"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b8b9527c-6f5a-4144-bc80-e467ba33625f">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="batchcsv"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="outputbatchjson"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#ac9784f2-226e-47c8-be4b-fbb70ff477bc">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="batchcsv"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="outputbatchjson"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#507d0cc7-9931-4168-98cd-28b8b9228346"/>
+</types:mule>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="batchforeach" >
+  <scheduler doc:name="Scheduler" >
+    <scheduling-strategy >
+				<cron expression="0 30 00 ? * *" />
+    
+</scheduling-strategy>
+  </scheduler>
+  <file:read
+     path="input.csv"
+     outputMimeType="application/csv; streaming=true; header=true" doc:name="CSV Input" config-ref="File_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="cc1f48d9-43d2-4504-85ea-e567e9814618">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="5925f989-0483-4c07-83a8-44dc4a0ea45f" >
+			<file:write doc:name="Write Json" path="output.json" config-ref="File_Config" mode="APPEND"/>
+		</foreach>
+  <logger level="INFO" doc:name="Logger" message="#[payload]"/>
+</flow>
+</mule>
